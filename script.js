@@ -51,9 +51,84 @@ class ThemeManager {
     const newTheme = currentTheme === "light" ? "dark" : "light";
     this.setTheme(newTheme);
   }
+}
 
-  getCurrentTheme() {
-    return document.documentElement.getAttribute("data-theme");
+// Mobile Navigation
+class MobileNavigation {
+  constructor() {
+    this.init();
+  }
+
+  init() {
+    this.setupMobileNav();
+    this.setupNavLinks();
+    this.setupResizeHandler();
+  }
+
+  setupMobileNav() {
+    const navToggle = document.querySelector(".nav__toggle");
+    const navMenu = document.querySelector(".nav__menu");
+
+    if (navToggle && navMenu) {
+      navToggle.addEventListener("click", () => {
+        this.toggleMenu();
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener("click", (e) => {
+        if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
+          this.closeMenu();
+        }
+      });
+
+      // Close menu on escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          this.closeMenu();
+        }
+      });
+    }
+  }
+
+  setupNavLinks() {
+    const navLinks = document.querySelectorAll(".nav__link");
+    navLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        this.closeMenu();
+      });
+    });
+  }
+
+  setupResizeHandler() {
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 768) {
+        this.closeMenu();
+      }
+    });
+  }
+
+  toggleMenu() {
+    const navToggle = document.querySelector(".nav__toggle");
+    const navMenu = document.querySelector(".nav__menu");
+
+    navToggle.classList.toggle("active");
+    navMenu.classList.toggle("active");
+
+    // Prevent body scroll when menu is open
+    if (navMenu.classList.contains("active")) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }
+
+  closeMenu() {
+    const navToggle = document.querySelector(".nav__toggle");
+    const navMenu = document.querySelector(".nav__menu");
+
+    navToggle.classList.remove("active");
+    navMenu.classList.remove("active");
+    document.body.style.overflow = "";
   }
 }
 
@@ -467,6 +542,7 @@ class TohumWebsite {
     try {
       // Initialize all components
       this.themeManager = new ThemeManager();
+      this.mobileNavigation = new MobileNavigation();
       this.clipboardManager = new ClipboardManager();
       this.scrollManager = new ScrollManager();
       this.animationManager = new AnimationManager();
